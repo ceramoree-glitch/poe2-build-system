@@ -1,0 +1,243 @@
+{
+  "version": "1.0.0",
+  "title": "PoE2 DPS Hesaplama Kuralları",
+  "description": "Path of Exile 2 oyununda DPS hesaplamasının tam mekaniği",
+  "sources": {
+    "dps_formulu_1": "Saldırı ve büyü DPS hesaplama prensipleri",
+    "receiving_damage": "Hasar alma mekaniği adımları"
+  },
+
+  "formula": {
+    "main": "DPS = Average_Hit × Attacks_Per_Second × Crit_Factor",
+    "details": {
+      "average_hit": "(Min_Damage + Max_Damage) / 2 (her hasar türü için ayrı, sonra toplanır)",
+      "attacks_per_second": "Base_APS × (1 + Sum_Increased_Speed%) × product_of_More_Speed%",
+      "crit_factor": "1 + (Crit_Chance / 100) × ((Crit_Multiplier / 100) - 1)"
+    }
+  },
+
+  "damage_layers": {
+    "order": ["Flat_Base", "Added_Flat", "Increased_Reduced", "More_Less", "Crit", "Speed"],
+    "definitions": {
+      "Flat_Base": "Skill veya silahın temel hasarı",
+      "Added_Flat": "Ekipman, buff, support gem'lerden gelen ek hasar",
+      "Increased_Reduced": {
+        "description": "Tüm increased/reduced kaynakları toplanır, tek çarpan olarak uygulanır",
+        "formula": "1 + (Sum_Inc% - Sum_Red%) / 100"
+      },
+      "More_Less": {
+        "description": "Her more/less kaynağı ayrı ayrı çarpılır",
+        "formula": "(1 + More1/100) × (1 + More2/100) × ... × (1 - Less1/100) × ..."
+      },
+      "Crit": {
+        "description": "Kritik vuruş şansı ve hasarı çarpanı",
+        "formula": "1 + (Crit_Chance/100) × ((Crit_Multiplier/100) - 1)"
+      },
+      "Speed": {
+        "description": "Saldırı veya büyü hızı",
+        "formula": "Base_APS × (1 + Sum_Increased_Speed%) × product_of_More_Speed%"
+      }
+    }
+  },
+
+  "damage_types": {
+    "physical": { "color": "#FFFFFF", "icon": "💥", "mitigation": "Armour" },
+    "fire": { "color": "#FF4444", "icon": "🔥", "mitigation": "Fire_Resistance" },
+    "cold": { "color": "#44BFFF", "icon": "❄️", "mitigation": "Cold_Resistance" },
+    "lightning": { "color": "#FFD700", "icon": "⚡", "mitigation": "Lightning_Resistance" },
+    "chaos": { "color": "#9B59B6", "icon": "☣️", "mitigation": "Chaos_Resistance" }
+  },
+
+  "damage_pipeline": {
+    "steps": [
+      {
+        "step": 1,
+        "name": "Vuruştan Kaçınma",
+        "description": "Evasion, Dodge Roll, manual movement ile vuruş tamamen engellenir"
+      },
+      {
+        "step": 2,
+        "name": "Flat Damage",
+        "description": "Base Damage + Added Damage toplanır",
+        "formula": "Flat = Base_Min + Added_Min | Base_Max + Added_Max"
+      },
+      {
+        "step": 3,
+        "name": "Damage Conversion",
+        "description": "Hasar türleri dönüştürülür (Skill-based → Global)",
+        "rules": [
+          "Conversion tek yönlü hiyerarşiyle çalışır: Physical → Lightning → Cold → Fire → Chaos",
+          "Her adımda toplam dönüştürme %100'ü geçemez",
+          "Gain conversion extra damage ekler, mevcut hasarı eksiltmez"
+        ]
+      },
+      {
+        "step": 4,
+        "name": "Increased / Reduced",
+        "description": "Tüm increased ve reduced kaynakları toplanır",
+        "formula": "Multiplier = 1 + (Sum_Inc% - Sum_Red%) / 100"
+      },
+      {
+        "step": 5,
+        "name": "More / Less",
+        "description": "Her more ve less kaynağı ayrı ayrı çarpılır",
+        "formula": "Product = (1 + More1/100) × (1 + More2/100) × ... × (1 - Less1/100)"
+      },
+      {
+        "step": 6,
+        "name": "Kritik Vuruş",
+        "description": "Kritik şansı ve hasarı uygulanır",
+        "formula": "Crit_Factor = 1 + (Crit_Chance/100) × ((Crit_Multiplier/100) - 1)"
+      },
+      {
+        "step": 7,
+        "name": "Hasar Tura Atma",
+        "description": "Min-Max aralığından rastgele değer seçilir",
+        "modifiers": {
+          "Lucky": "İki kez atar, yüksek olanı seçer",
+          "Unlucky": "İki kez atar, düşük olanı seçer"
+        }
+      },
+      {
+        "step": 8,
+        "name": "Hasar Azaltımı (Mitigation)",
+        "description": "Armour, Resistance, Damage Reduction uygulanır",
+        "order": ["Damage_Reduction", "Resistance", "Exposure", "Penetration"],
+        "notes": {
+          "Damage_Reduction": "Armour ve flat azaltmalar dirençlerden önce hesaplanır",
+          "Resistance": "Elemental ve Chaos dirençleri",
+          "Penetration": "Dirençleri eksi (%) değerlere düşürebilir"
+        }
+      },
+      {
+        "step": 9,
+        "name": "Alınan Hasarı Değiştirenler (Damage Taken Modifiers)",
+        "description": "Shock, Withered, Intimidate gibi hedef üzerindeki debuff'lar",
+        "order": ["Flat", "Increased_Reduced", "More_Less"]
+      },
+      {
+        "step": 10,
+        "name": "Block",
+        "description": "Hasarı tamamen veya kısmen engeller",
+        "notes": "Block basarılı olsa bile vurulma (hit) gerçekleştiği için trigger efektlerini çalıştırabilir"
+      },
+      {
+        "step": 11,
+        "name": "Kaynak Tüketimi",
+        "description": "Kalan hasar şu sırayla savunma havuzlarından düşülür",
+        "order": ["Guard_Buff", "Energy_Shield", "Mana", "Life"],
+        "notes": {
+          "Chaos_Damage": "Varsayılan olarak Energy Shield'i bypass ederek doğrudan Mana/Life'a vurur",
+          "Bleeding_Poison": "DoT efektleri Energy Shield'i bypass edebilir"
+        }
+      }
+    ]
+  },
+
+  "crit_table": {
+    "description": "Kritik şansı ve hasarının etkisi",
+    "table": [
+      { "crit_chance": 5, "multi_200": 1.050, "multi_250": 1.075, "multi_300": 1.100 },
+      { "crit_chance": 20, "multi_200": 1.200, "multi_250": 1.300, "multi_300": 1.400 },
+      { "crit_chance": 40, "multi_200": 1.400, "multi_250": 1.600, "multi_300": 1.800 },
+      { "crit_chance": 60, "multi_200": 1.600, "multi_250": 1.900, "multi_300": 2.200 },
+      { "crit_chance": 80, "multi_200": 1.800, "multi_250": 2.200, "multi_300": 2.600 },
+      { "crit_chance": 100, "multi_200": 2.000, "multi_250": 2.500, "multi_300": 3.000 }
+    ]
+  },
+
+  "speed_reference": {
+    "weapons": [
+      { "type": "Two-handed mace", "base_aps": 1.10, "feel": "Slow, big hits" },
+      { "type": "One-handed sword", "base_aps": 1.40, "feel": "Balanced" },
+      { "type": "Claw / dagger", "base_aps": 1.60, "feel": "Fast, crit-friendly" },
+      { "type": "Bow", "base_aps": 1.20, "feel": "Ranged, projectiles" },
+      { "type": "Typical spell cast", "base_aps": 1.00, "feel": "Scales with cast speed" },
+      { "type": "Fast spell cast", "base_aps": 1.50, "feel": "High cast investment" }
+    ],
+    "formula": "Total_APS = Base_APS × (1 + Sum_Increased_Speed%) × product_of_More_Speed%"
+  },
+
+  "build_comparison": {
+    "examples": [
+      {
+        "build": "Attack Build",
+        "flat_damage": "250 + 80",
+        "increased": 350,
+        "more_lines": "39%, 25%",
+        "speed": 1.55,
+        "crit": "45% / 250%",
+        "style": "Melee sustained"
+      },
+      {
+        "build": "Spell Caster",
+        "flat_damage": "420 + 40",
+        "increased": 300,
+        "more_lines": "30%, 20%",
+        "speed": 1.30,
+        "crit": "35% / 230%",
+        "style": "Elemental spell"
+      },
+      {
+        "build": "Crit Stacker",
+        "flat_damage": "300 + 60",
+        "increased": 250,
+        "more_lines": "20%",
+        "speed": 1.65,
+        "crit": "78% / 320%",
+        "style": "High crit hits"
+      },
+      {
+        "build": "More Multipliers",
+        "flat_damage": "280 + 70",
+        "increased": 200,
+        "more_lines": "44%, 39%, 30%",
+        "speed": 1.45,
+        "crit": "40% / 260%",
+        "style": "Multiplicative"
+      },
+      {
+        "build": "Bow Build",
+        "flat_damage": "210 + 90",
+        "increased": 320,
+        "more_lines": "35%, 25%",
+        "speed": 1.80,
+        "crit": "55% / 270%",
+        "style": "Projectiles"
+      },
+      {
+        "build": "Boss DPS",
+        "flat_damage": "360 + 120",
+        "increased": 450,
+        "more_lines": "50%, 40%, 30%",
+        "speed": 1.60,
+        "crit": "70% / 340%",
+        "style": "Single target"
+      }
+    ]
+  },
+
+  "example_calculation": {
+    "skill": "Fireball",
+    "inputs": {
+      "base_damage": 195,
+      "damage_effectiveness": 180,
+      "increased_damage": 10,
+      "more_damage": 15,
+      "cast_time": 0.85
+    },
+    "calculation": "195 × 1.80 × 1.10 × 1.15 / 0.85",
+    "result": 522.37
+  },
+
+  "practical_tips": [
+    "Increased vs More: Increased toplamı yüksekse, yeni bir More çarpanı DPS'e çok daha büyük ivme kazandırır.",
+    "Crit dengesi: Kritik şansı ve hasar çarpanı bir arada yükseltilmelidir, tek başlarına çarpan verimlilikleri düşüktür.",
+    "Flat damage: Erken oyunda aşırı etkilidir; yüzdelik artışlar (Inc/More) biriştikçe etkisi yüzdesel olarak dengelenir.",
+    "Hasar Verme Sırası: Flat Base → Added Flat → Increased/Reduced → More/Less → Crit → Speed",
+    "Savunma Sırası: Evasion → Flat/Percent Reduction → Resistance/Penetration → Block → Resource Pool"
+  ],
+
+  "status": "ready",
+  "last_updated": "2026-09-09"
+}
