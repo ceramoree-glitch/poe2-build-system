@@ -1,0 +1,2 @@
+# Skill Gem Verileri
+Bu klasöre skill gem CSV dosyalarınızı yükleyin.
