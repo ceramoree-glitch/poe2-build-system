@@ -1,31 +1,29 @@
-# Proje Klasör Yapısı
+name: Create All Folders
 
-## Ana Klasörler
-- SKILL/ - Skill gem verileri (8 dosya)
-- ASCENDANCY/ - Ascendancy verileri (1 dosya)
-- UNIQUE/ - Unique item verileri (3 dosya)
+on:
+  workflow_dispatch:
 
-## Veri Klasörleri
-- KEYWORDS/ - Anahtar kelimeler
-- CONSTITUTION/ - Kurallar ve anayasa
-- FUTURE_MECHANICS/ - Gelecek mekanikler
-
-## İşlem Klasörleri
-- DATA/ - İşlenmiş veriler
-  - raw/ - Ham veriler
-  - processed/ - Temizlenmiş veriler
-  - merged/ - Birleştirilmiş veriler
-
-- SRC/ - Kaynak kodlar
-  - cleaners/ - Veri temizleyiciler
-  - analyzers/ - Analizörler
-  - validators/ - Doğrulayıcılar
-  - reports/ - Rapor oluşturucular
-
-- OUTPUTS/ - Çıktılar
-  - reports/ - Raporlar
-  - archive/ - Arşivler
-  - web/ - Web dosyaları
-
-- SCRIPTS/ - Çalıştırma scriptleri
-- CONFIG/ - Yapılandırma
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+    - run: |
+        mkdir -p SKILL ASCENDANCY UNIQUE
+        mkdir -p KEYWORDS CONSTITUTION FUTURE_MECHANICS/league_mechanics
+        mkdir -p DATA/raw/from_skill DATA/raw/from_ascendancy DATA/raw/from_unique
+        mkdir -p DATA/processed DATA/merged
+        mkdir -p SRC/cleaners SRC/analyzers SRC/validators SRC/reports
+        mkdir -p OUTPUTS/reports/daily OUTPUTS/reports/weekly OUTPUTS/reports/monthly
+        mkdir -p OUTPUTS/archive OUTPUTS/web
+        mkdir -p SCRIPTS CONFIG
+        echo "✅ Tüm klasörler oluşturuldu"
+        ls -R
+    - run: |
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git config user.name "github-actions[bot]"
+        git add .
+        git commit -m "📁 Tüm klasörler oluşturuldu" || echo "No changes"
+        git push
