@@ -1,5 +1,7 @@
 name: PoE2 Tag Analysis
-
+- name: 👔 Şef Ajanını Çalıştır
+  run: |
+    python SRC/agents/chief.py
 on:
   push:
     paths:
