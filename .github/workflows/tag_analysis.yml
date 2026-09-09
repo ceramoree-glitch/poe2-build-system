@@ -1,7 +1,5 @@
 name: PoE2 Tag Analysis
-- name: 👔 Şef Ajanını Çalıştır
-  run: |
-    python SRC/agents/chief.py
+
 on:
   push:
     paths:
@@ -10,7 +8,7 @@ on:
       - 'ASCENDANCY/*.csv'
       - 'SRC/**'
       - 'CONSTITUTION/**'
-      - 'index.html'
+      - 'SCRIPTS/**'
   schedule:
     - cron: '0 10 * * *'
   workflow_dispatch:
@@ -20,8 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pages: write
-      id-token: write
     
     steps:
     - name: 📥 Repoyu çek
@@ -59,18 +55,20 @@ jobs:
       run: |
         python SCRIPTS/find_best_supports.py
     
+    - name: ⚔️ Tam Sistem Çalıştır
+      run: |
+        python SCRIPTS/run_full_system.py
+    
     - name: 💾 Sonuçları kaydet
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "Tag Analyzer Bot"
         
-        # Var olan dosyaları ekle (hata varsa geç)
         git add DATA/processed/ 2>/dev/null || true
         git add OUTPUTS/reports/ 2>/dev/null || true
         git add CONSTITUTION/ 2>/dev/null || true
         git add OUTPUTS/web/ 2>/dev/null || true
         
-        # Değişiklik varsa commit ve push
         if ! git diff --cached --quiet; then
           git commit -m "🏷️ Günlük tag analizi: $(date +'%Y-%m-%d')"
           git push
