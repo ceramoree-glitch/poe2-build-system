@@ -196,53 +196,98 @@
     </div>
 
     <script>
-        async function loadReport() {
-            try {
-                const date = new Date();
-                const dateStr = date.toISOString().split('T')[0];
-                const reportUrl = `OUTPUTS/reports/daily/tag_analysis_${dateStr}.json`;
-                
-                const reportResponse = await fetch(reportUrl);
-                if (!reportResponse.ok) {
+    // En son raporu GitHub'dan çek
+    async function loadReport() {
+        const updateTime = document.getElementById('update-time');
+        const totalSkills = document.getElementById('total-skills');
+        const totalUniques = document.getElementById('total-uniques');
+        const totalTags = document.getElementById('total-tags');
+        const lastAnalysis = document.getElementById('last-analysis');
+        const popularTags = document.getElementById('popular-tags');
+        const categoryDist = document.getElementById('category-distribution');
+
+        try {
+            // Bugünün tarihini al (YYYY-MM-DD formatında)
+            const date = new Date();
+            const dateStr = date.toISOString().split('T')[0];
+            const reportUrl = `OUTPUTS/reports/daily/tag_analysis_${dateStr}.json`;
+
+            const reportResponse = await fetch(reportUrl);
+            if (!reportResponse.ok) {
+                // Eğer bugünün raporu yoksa, bir önceki günü dene
+                const yesterday = new Date(date);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+                const fallbackUrl = `OUTPUTS/reports/daily/tag_analysis_${yesterdayStr}.json`;
+                const fallbackResponse = await fetch(fallbackUrl);
+                if (!fallbackResponse.ok) {
                     throw new Error('Rapor bulunamadı');
                 }
-                
-                const data = await reportResponse.json();
-                
-                document.getElementById('update-time').textContent = new Date(data.date).toLocaleString('tr-TR');
-                document.getElementById('total-skills').textContent = data.files_processed?.skill || 0;
-                document.getElementById('total-uniques').textContent = data.files_processed?.unique || 0;
-                document.getElementById('last-analysis').textContent = data.date ? new Date(data.date).toLocaleDateString('tr-TR') : '-';
-                
-                const tagContainer = document.getElementById('popular-tags');
-                if (data.popular_tags) {
-                    tagContainer.innerHTML = '';
-                    const tags = Object.entries(data.popular_tags)
-                        .sort((a, b) => b[1] - a[1])
-                        .slice(0, 10);
-                    
-                    tags.forEach(([tag, count]) => {
-                        const span = document.createElement('span');
-                        span.className = `tag ${tag.toLowerCase()}`;
-                        span.textContent = `${tag} (${count})`;
-                        tagContainer.appendChild(span);
-                    });
-                }
-                
-                document.getElementById('total-tags').textContent = data.popular_tags ? Object.keys(data.popular_tags).length : 0;
-                
-            } catch (e) {
-                console.log('Rapor yüklenirken hata:', e);
-                document.getElementById('popular-tags').innerHTML = '⚠️ Rapor henüz oluşturulmamış. İlk analiz bekleniyor...';
+                var data = await fallbackResponse.json();
+            } else {
+                var data = await reportResponse.json();
             }
+
+            // Verileri göster
+            updateTime.textContent = new Date(data.date).toLocaleString('tr-TR');
+            totalSkills.textContent = data.files_processed?.skill || 0;
+            totalUniques.textContent = data.files_processed?.unique || 0;
+            lastAnalysis.textContent = data.date ? new Date(data.date).toLocaleDateString('tr-TR') : '-';
+
+            // --- Popüler Etiketler ---
+            popularTags.innerHTML = '';
+            if (data.popular_tags && Object.keys(data.popular_tags).length > 0) {
+                const tags = Object.entries(data.popular_tags)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 10);
+                
+                tags.forEach(([tag, count]) => {
+                    const span = document.createElement('span');
+                    // Etiket sınıfını ekle (renk için)
+                    const tagClass = tag.toLowerCase();
+                    span.className = `tag ${tagClass}`;
+                    span.textContent = `${tag} (${count})`;
+                    popularTags.appendChild(span);
+                });
+                totalTags.textContent = Object.keys(data.popular_tags).length;
+            } else {
+                popularTags.innerHTML = '⚠️ Henüz etiket verisi yok.';
+                totalTags.textContent = '0';
+            }
+
+            // --- Kategori Dağılımı ---
+            categoryDist.innerHTML = '';
+            let categories = data.categories || data.unique_categories || {};
+            if (Object.keys(categories).length > 0) {
+                const catHtml = document.createElement('div');
+                catHtml.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;';
+                
+                Object.entries(categories).forEach(([cat, count]) => {
+                    const span = document.createElement('span');
+                    span.className = 'tag';
+                    span.textContent = `${cat}: ${count}`;
+                    catHtml.appendChild(span);
+                });
+                categoryDist.appendChild(catHtml);
+            } else {
+                categoryDist.innerHTML = '⚠️ Henüz kategori verisi yok.';
+            }
+
+        } catch (e) {
+            console.log('Rapor yüklenirken hata:', e);
+            popularTags.innerHTML = '⚠️ Rapor henüz oluşturulmamış. İlk analiz bekleniyor...';
+            categoryDist.innerHTML = '⏳ İlk veriler geliyor...';
         }
-        
-        document.querySelectorAll('.repo-link').forEach(el => {
-            el.href = 'https://github.com/ceramoree-glitch/poe2-build-system';
-            el.textContent = 'ceramoree-glitch/poe2-build-system';
-        });
-        
-        loadReport();
-    </script>
+    }
+    
+    // Repo linkleri
+    document.querySelectorAll('.repo-link').forEach(el => {
+        el.href = 'https://github.com/ceramoree-glitch/poe2-build-system';
+        el.textContent = 'ceramoree-glitch/poe2-build-system';
+    });
+    
+    // Sayfa yüklendiğinde çalıştır
+    loadReport();
+</script>
 </body>
 </html>
