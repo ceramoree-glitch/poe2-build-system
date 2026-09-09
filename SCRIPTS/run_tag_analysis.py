@@ -118,7 +118,48 @@ try:
             'unique': len(unique_files) if 'unique_files' in locals() else 0
         }
     }
+    # ... (mevcut kodunuzun sonuna yakın bir yere, rapor oluşturma bölümüne ekleyin)
+
+# --- Raporu zenginleştirme (Ekleme) ---
+print("📊 Adım 4: Rapor zenginleştiriliyor...")
+
+try:
+    # processed klasöründeki en son verileri oku
+    skill_df = pd.read_csv('DATA/processed/skills_with_tags.csv')
     
+    # 1. Popüler etiketleri hesapla
+    all_tags = []
+    if 'parsed_tags' in skill_df.columns:
+        for tags in skill_df['parsed_tags']:
+            if pd.notna(tags):
+                all_tags.extend(str(tags).split('|'))
+    
+    from collections import Counter
+    tag_counts = Counter(all_tags)
+    popular_tags = dict(tag_counts.most_common(10))
+    
+    # 2. Kategori dağılımını hesapla (örnek olarak 'slot' veya 'category' sütunundan)
+    categories = {}
+    if 'slot' in skill_df.columns:
+        categories = skill_df['slot'].value_counts().to_dict()
+    elif 'category' in skill_df.columns:
+        categories = skill_df['category'].value_counts().to_dict()
+    
+    # 3. Ana rapor verilerine bu bilgileri ekle
+    report_data['popular_tags'] = popular_tags
+    report_data['categories'] = categories
+    
+    # Raporu tekrar kaydet
+    with open(report_file, 'w', encoding='utf-8') as f:
+        json.dump(report_data, f, indent=2, ensure_ascii=False)
+    
+    print(f"  ✅ Rapor zenginleştirildi: {report_file}")
+    print(f"  🏷️ Popüler tag'ler: {dict(list(popular_tags.items())[:5])}")
+    
+except Exception as e:
+    print(f"  ⚠️ Rapor zenginleştirme hatası: {e}")
+
+# ... (mevcut kodunuzun devamı)
     # Raporu kaydet
     os.makedirs('OUTPUTS/reports/daily', exist_ok=True)
     report_file = f'OUTPUTS/reports/daily/tag_analysis_{datetime.now().strftime("%Y-%m-%d")}.json'
