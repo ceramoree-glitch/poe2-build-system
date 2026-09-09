@@ -1,0 +1,39 @@
+# SCRIPTS/test_accountant.py
+import sys
+from pathlib import Path
+
+# SRC klasörünü Python path'ine ekle
+sys.path.insert(0, str(Path(__file__).parent.parent / 'SRC'))
+
+from agents.accountant import Accountant
+
+print("🧮 Muhasebeci Ajanı Testi")
+print("-" * 40)
+
+# Muhasebeciyi başlat
+accountant = Accountant()
+
+if accountant.is_ready:
+    print("✅ Muhasebeci hazır!")
+    
+    # Örnek hesaplama
+    skill = {
+        "base_damage": 195,
+        "damage_effectiveness": 180,
+        "cast_time": 0.85
+    }
+    
+    supports = [
+        {"more_damage": 1.15},
+        {"more_damage": 1.25},
+        {"more_damage": 1.30}
+    ]
+    
+    equipment = [
+        {"increased_damage": 10}
+    ]
+    
+    result = accountant.calculate_dps(skill, supports, equipment)
+    print(f"🎯 DPS: {result['dps']:,.2f}")
+else:
+    print("❌ Muhasebeci hazır değil!")
