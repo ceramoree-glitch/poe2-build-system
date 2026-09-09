@@ -1,8 +1,28 @@
 {
-  "date": "2026-09-09T09:17:58.548122",
+  "date": "2026-09-09T09:24:03.568913",
   "status": "success",
   "files_processed": {
     "skill": 7,
     "unique": 3
+  },
+  "popular_tags": {
+    "": 517,
+    "minion": 9,
+    "fire": 8,
+    "lightning": 6,
+    "cold": 4,
+    "curse": 4,
+    "attack": 3,
+    "spell": 3,
+    "chaos": 2,
+    "physical": 1
+  },
+  "categories": {
+    "Other": 546,
+    "Ring": 9,
+    "Shield": 2
+  },
+  "unique_categories": {
+    "Other": 48
   }
 }
