@@ -195,8 +195,7 @@
         </div>
     </div>
 
-    <script>
-    // En son raporu GitHub'dan çek
+   <script>
     async function loadReport() {
         const updateTime = document.getElementById('update-time');
         const totalSkills = document.getElementById('total-skills');
@@ -207,34 +206,30 @@
         const categoryDist = document.getElementById('category-distribution');
 
         try {
-            // Bugünün tarihini al (YYYY-MM-DD formatında)
             const date = new Date();
             const dateStr = date.toISOString().split('T')[0];
-            const reportUrl = `OUTPUTS/reports/daily/tag_analysis_${dateStr}.json`;
+            let reportUrl = `OUTPUTS/reports/daily/tag_analysis_${dateStr}.json`;
 
-            const reportResponse = await fetch(reportUrl);
-            if (!reportResponse.ok) {
-                // Eğer bugünün raporu yoksa, bir önceki günü dene
+            let response = await fetch(reportUrl);
+            if (!response.ok) {
                 const yesterday = new Date(date);
                 yesterday.setDate(yesterday.getDate() - 1);
                 const yesterdayStr = yesterday.toISOString().split('T')[0];
                 const fallbackUrl = `OUTPUTS/reports/daily/tag_analysis_${yesterdayStr}.json`;
-                const fallbackResponse = await fetch(fallbackUrl);
-                if (!fallbackResponse.ok) {
+                response = await fetch(fallbackUrl);
+                if (!response.ok) {
                     throw new Error('Rapor bulunamadı');
                 }
-                var data = await fallbackResponse.json();
-            } else {
-                var data = await reportResponse.json();
             }
+            
+            const data = await response.json();
 
-            // Verileri göster
             updateTime.textContent = new Date(data.date).toLocaleString('tr-TR');
             totalSkills.textContent = data.files_processed?.skill || 0;
             totalUniques.textContent = data.files_processed?.unique || 0;
             lastAnalysis.textContent = data.date ? new Date(data.date).toLocaleDateString('tr-TR') : '-';
 
-            // --- Popüler Etiketler ---
+            // Popüler Etiketler
             popularTags.innerHTML = '';
             if (data.popular_tags && Object.keys(data.popular_tags).length > 0) {
                 const tags = Object.entries(data.popular_tags)
@@ -243,9 +238,7 @@
                 
                 tags.forEach(([tag, count]) => {
                     const span = document.createElement('span');
-                    // Etiket sınıfını ekle (renk için)
-                    const tagClass = tag.toLowerCase();
-                    span.className = `tag ${tagClass}`;
+                    span.className = `tag ${tag.toLowerCase()}`;
                     span.textContent = `${tag} (${count})`;
                     popularTags.appendChild(span);
                 });
@@ -255,9 +248,11 @@
                 totalTags.textContent = '0';
             }
 
-            // --- Kategori Dağılımı ---
+            // Kategori Dağılımı
             categoryDist.innerHTML = '';
-            let categories = data.categories || data.unique_categories || {};
+            // categories, unique_categories veya slot anahtarlarını kontrol et
+            let categories = data.categories || data.unique_categories || data.slot || {};
+            
             if (Object.keys(categories).length > 0) {
                 const catHtml = document.createElement('div');
                 catHtml.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;';
@@ -270,7 +265,44 @@
                 });
                 categoryDist.appendChild(catHtml);
             } else {
-                categoryDist.innerHTML = '⚠️ Henüz kategori verisi yok.';
+                // Eğer kategoriler ana veride yoksa, skill verisinden okumayı dene
+                const skillResponse = await fetch('DATA/processed/skills_with_tags.csv');
+                if (skillResponse.ok) {
+                    const csvText = await skillResponse.text();
+                    const lines = csvText.split('\n');
+                    const headers = lines[0].split(',');
+                    const categoryIndex = headers.indexOf('category');
+                    if (categoryIndex !== -1) {
+                        const catCounts = {};
+                        for (let i = 1; i < lines.length; i++) {
+                            const cols = lines[i].split(',');
+                            if (cols.length > categoryIndex) {
+                                const cat = cols[categoryIndex].trim();
+                                if (cat) {
+                                    catCounts[cat] = (catCounts[cat] || 0) + 1;
+                                }
+                            }
+                        }
+                        categories = catCounts;
+                        if (Object.keys(categories).length > 0) {
+                            const catHtml = document.createElement('div');
+                            catHtml.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;';
+                            Object.entries(categories).forEach(([cat, count]) => {
+                                const span = document.createElement('span');
+                                span.className = 'tag';
+                                span.textContent = `${cat}: ${count}`;
+                                catHtml.appendChild(span);
+                            });
+                            categoryDist.appendChild(catHtml);
+                        } else {
+                            categoryDist.innerHTML = '⚠️ Kategori verisi bulunamadı.';
+                        }
+                    } else {
+                        categoryDist.innerHTML = '⚠️ CSV dosyasında kategori sütunu yok.';
+                    }
+                } else {
+                    categoryDist.innerHTML = '⚠️ Kategori verisi bulunamadı.';
+                }
             }
 
         } catch (e) {
@@ -280,13 +312,11 @@
         }
     }
     
-    // Repo linkleri
     document.querySelectorAll('.repo-link').forEach(el => {
         el.href = 'https://github.com/ceramoree-glitch/poe2-build-system';
         el.textContent = 'ceramoree-glitch/poe2-build-system';
     });
     
-    // Sayfa yüklendiğinde çalıştır
     loadReport();
 </script>
 </body>
