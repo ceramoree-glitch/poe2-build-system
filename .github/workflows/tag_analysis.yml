@@ -1,3 +1,6 @@
+- name: 🧹 Skill verisini ön işle
+  run: |
+    python SCRIPTS/preprocess_skills.py
 name: PoE2 Tag Analysis
 
 on:
