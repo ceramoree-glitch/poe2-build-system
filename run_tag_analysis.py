@@ -3,6 +3,9 @@ import json
 import pandas as pd
 from pathlib import Path
 from datetime import datetime
+- name: 🧮 Muhasebeci Ajanını Test Et
+  run: |
+    python SCRIPTS/test_accountant.py
 - name: 🧠 Ajan sistemini çalıştır
   run: |
     python SCRIPTS/agent_system.py
