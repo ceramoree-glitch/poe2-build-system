@@ -6,3 +6,11 @@
     "unique": 3
   }
 }
+yaml
+- name: 💾 Sonuçları kaydet
+  run: |
+    git config --local user.email "github-actions[bot]@users.noreply.github.com"
+    git config --local user.name "Tag Analyzer Bot"
+    git add DATA/processed/ OUTPUTS/reports/ OUTPUTS/web/
+    git diff --cached --quiet || git commit -m "🏷️ Günlük tag analizi: $(date +'%Y-%m-%d')"
+    git push
