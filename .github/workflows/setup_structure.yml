@@ -1,99 +1,31 @@
-name: Create Folder Structure
+# Proje Klasör Yapısı
 
-on:
-  workflow_dispatch:  # Manuel çalıştırma
+## Ana Klasörler
+- SKILL/ - Skill gem verileri (8 dosya)
+- ASCENDANCY/ - Ascendancy verileri (1 dosya)
+- UNIQUE/ - Unique item verileri (3 dosya)
 
-jobs:
-  create-structure:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: 📥 Repoyu çek
-      uses: actions/checkout@v4
-    
-    - name: 📁 Tüm klasörleri oluştur
-      run: |
-        # Mevcut klasörler
-        mkdir -p SKILL
-        mkdir -p ASCENDANCY
-        mkdir -p UNIQUE
-        
-        # Yeni ana klasörler
-        mkdir -p KEYWORDS
-        mkdir -p CONSTITUTION
-        mkdir -p FUTURE_MECHANICS/league_mechanics
-        mkdir -p FUTURE_MECHANICS/new_classes
-        mkdir -p FUTURE_MECHANICS/upcoming_skills
-        
-        mkdir -p DATA/raw/from_skill
-        mkdir -p DATA/raw/from_ascendancy
-        mkdir -p DATA/raw/from_unique
-        mkdir -p DATA/processed
-        mkdir -p DATA/merged
-        
-        mkdir -p SRC/cleaners
-        mkdir -p SRC/analyzers
-        mkdir -p SRC/validators
-        mkdir -p SRC/reports
-        
-        mkdir -p OUTPUTS/reports/daily
-        mkdir -p OUTPUTS/reports/weekly
-        mkdir -p OUTPUTS/reports/monthly
-        mkdir -p OUTPUTS/archive
-        mkdir -p OUTPUTS/web
-        
-        mkdir -p SCRIPTS
-        mkdir -p CONFIG
-        
-        echo "✅ Tüm klasörler oluşturuldu"
-    
-    - name: 📄 Placeholder dosyaları oluştur
-      run: |
-        # KEYWORDS placeholder
-        echo "damage_type,color,icon,description" > KEYWORDS/damage_types.csv
-        echo "Physical,#FFFFFF,💥,Fiziksel hasar" >> KEYWORDS/damage_types.csv
-        
-        echo "ailment,type,effect,color" > KEYWORDS/ailment_types.csv
-        echo "Ignite,Fire,Damage over Time,#FF4444" >> KEYWORDS/ailment_types.csv
-        
-        echo "tag,category,description,priority" > KEYWORDS/build_tags.csv
-        echo "Spell,Caster,Spell skill'leri kullanır,1" >> KEYWORDS/build_tags.csv
-        
-        echo "keyword,category,value_type,priority" > KEYWORDS/stat_keywords.csv
-        echo "Life,Defense,numeric,1" >> KEYWORDS/stat_keywords.csv
-        
-        # CONSTITUTION placeholder
-        echo '{"version":"1.0.0","rules":{"data_validation":{"required_fields":["name","level"]}}}' > CONSTITUTION/rules.json
-        echo '{"formula":{"name":"PoE2 DPS","version":"1.0"}}' > CONSTITUTION/dps_formula.json
-        echo '{"slot_constraints":{"weapon":{"max":2}}}' > CONSTITUTION/build_constraints.json
-        
-        # FUTURE_MECHANICS placeholder
-        echo "# Gelecek Mekanikler" > FUTURE_MECHANICS/planned_features.md
-        echo "# Ritual Mekanikleri" > FUTURE_MECHANICS/league_mechanics/placeholder.md
-        
-        # CONFIG placeholder
-        echo '{"settings":{"auto_update":true}}' > CONFIG/settings.json
-        echo '{"paths":{"data":"DATA","outputs":"OUTPUTS"}}' > CONFIG/paths.json
-        
-        # README
-        echo "# PoE2 Build System" > README.md
-        echo "## Klasör Yapısı" >> README.md
-        echo "- SKILL/ - Skill gem verileri" >> README.md
-        echo "- ASCENDANCY/ - Ascendancy verileri" >> README.md
-        echo "- UNIQUE/ - Unique item verileri" >> README.md
-        echo "- KEYWORDS/ - Anahtar kelimeler" >> README.md
-        echo "- CONSTITUTION/ - Kurallar ve anayasa" >> README.md
-        echo "- FUTURE_MECHANICS/ - Gelecek mekanikler" >> README.md
-        echo "- DATA/ - İşlenmiş veriler" >> README.md
-        echo "- SRC/ - Kaynak kodlar" >> README.md
-        echo "- OUTPUTS/ - Raporlar ve çıktılar" >> README.md
-        echo "- SCRIPTS/ - Çalıştırma scriptleri" >> README.md
-        echo "- CONFIG/ - Yapılandırma" >> README.md
-    
-    - name: 💾 Değişiklikleri kaydet
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "Folder Creator Bot"
-        git add .
-        git diff --cached --quiet || git commit -m "📁 Tüm klasör yapısı oluşturuldu"
-        git push
+## Veri Klasörleri
+- KEYWORDS/ - Anahtar kelimeler
+- CONSTITUTION/ - Kurallar ve anayasa
+- FUTURE_MECHANICS/ - Gelecek mekanikler
+
+## İşlem Klasörleri
+- DATA/ - İşlenmiş veriler
+  - raw/ - Ham veriler
+  - processed/ - Temizlenmiş veriler
+  - merged/ - Birleştirilmiş veriler
+
+- SRC/ - Kaynak kodlar
+  - cleaners/ - Veri temizleyiciler
+  - analyzers/ - Analizörler
+  - validators/ - Doğrulayıcılar
+  - reports/ - Rapor oluşturucular
+
+- OUTPUTS/ - Çıktılar
+  - reports/ - Raporlar
+  - archive/ - Arşivler
+  - web/ - Web dosyaları
+
+- SCRIPTS/ - Çalıştırma scriptleri
+- CONFIG/ - Yapılandırma
