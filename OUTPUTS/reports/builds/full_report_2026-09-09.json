@@ -1,0 +1,96 @@
+{
+  "date": "2026-09-09 10:39:35",
+  "total_builds": 10,
+  "ranked_builds": [
+    {
+      "skill": "Amanamu's Tithe",
+      "supports": [],
+      "ascendancies": [
+        "Unknown",
+        "Unknown"
+      ],
+      "dps": 0.0
+    },
+    {
+      "skill": "Atalui's Bloodletting",
+      "supports": [],
+      "ascendancies": [
+        "Unknown",
+        "Unknown"
+      ],
+      "dps": 0.0
+    },
+    {
+      "skill": "Auto Reload",
+      "supports": [],
+      "ascendancies": [
+        "Unknown",
+        "Unknown"
+      ],
+      "dps": 0.0
+    },
+    {
+      "skill": "Bloodlust",
+      "supports": [],
+      "ascendancies": [
+        "Unknown",
+        "Unknown"
+      ],
+      "dps": 0.0
+    },
+    {
+      "skill": "Brutus' Brain",
+      "supports": [],
+      "ascendancies": [
+        "Unknown",
+        "Unknown"
+      ],
+      "dps": 0.0
+    },
+    {
+      "skill": "Cirel's Cultivation",
+      "supports": [],
+      "ascendancies": [
+        "Unknown",
+        "Unknown"
+      ],
+      "dps": 0.0
+    },
+    {
+      "skill": "Paquate's Pact",
+      "supports": [],
+      "ascendancies": [
+        "Unknown",
+        "Unknown"
+      ],
+      "dps": 0.0
+    },
+    {
+      "skill": "Daresso's Passion",
+      "supports": [],
+      "ascendancies": [
+        "Unknown",
+        "Unknown"
+      ],
+      "dps": 0.0
+    },
+    {
+      "skill": "Dauntless",
+      "supports": [],
+      "ascendancies": [
+        "Unknown",
+        "Unknown"
+      ],
+      "dps": 0.0
+    },
+    {
+      "skill": "Einhar's Beastrite",
+      "supports": [],
+      "ascendancies": [
+        "Unknown",
+        "Unknown"
+      ],
+      "dps": 0.0
+    }
+  ]
+}
