@@ -3,7 +3,9 @@ import json
 import pandas as pd
 from pathlib import Path
 from datetime import datetime
-
+- name: 🧠 Ajan sistemini çalıştır
+  run: |
+    python SCRIPTS/agent_system.py
 # Modül yollarını ekle
 sys.path.insert(0, str(Path(__file__).parent.parent / 'SRC'))
 
