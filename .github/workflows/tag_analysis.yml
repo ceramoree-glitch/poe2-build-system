@@ -1,6 +1,3 @@
-- name: 🧹 Skill verisini ön işle
-  run: |
-    python SCRIPTS/preprocess_skills.py
 name: PoE2 Tag Analysis
 
 on:
@@ -34,7 +31,9 @@ jobs:
     - name: 📦 Bağımlılıkları yükle
       run: |
         pip install pandas numpy
-    
+    - name: 🧹 Skill verisini ön işle
+  run: |
+    python SCRIPTS/preprocess_skills.py
     - name: 🔍 Etiket analizini çalıştır
       run: |
         python SCRIPTS/run_tag_analysis.py
