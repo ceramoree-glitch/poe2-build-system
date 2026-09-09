@@ -1,0 +1,1 @@
+{"version":"1.0.0","rules":{"data_validation":{"required_fields":["name","level"]}}}
