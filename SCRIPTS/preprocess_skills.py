@@ -1,6 +1,6 @@
 """
 Ham Scraper CSV'sini Kural Tabanlı Temizleme
-GitHub Actions ortamında çalışacak şekilde düzenlenmiştir.
+DATA/raw/skills_raw.csv dosyasını işler, temizler ve DATA/processed/cleaned_skills.csv olarak kaydeder.
 """
 
 import pandas as pd
@@ -27,9 +27,9 @@ def main():
     
     df = pd.read_csv(RAW_CSV_PATH)
     print(f"✅ Yüklendi: {len(df)} satır, {len(df.columns)} sütun")
-    print(f"   Sütunlar: {', '.join(df.columns[:5])} ...")
+    print(f"   Sütunlar: {', '.join(df.columns[:8])} ...")
 
-    # === ADIM 2: Belirtilen sütunları kaldır ===
+    # === ADIM 2: web_scraper_order, web_scraper_start_url, image sütunlarını kaldır ===
     print("\n🗑️ Gereksiz sütunlar temizleniyor...")
     remove_cols = ["web_scraper_order", "web_scraper_start_url", "image"]
     removed = [c for c in remove_cols if c in df.columns]
