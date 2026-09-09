@@ -7,6 +7,7 @@ on:
       - 'UNIQUE/*.csv'
       - 'ASCENDANCY/*.csv'
       - 'SRC/**'
+      - 'CONSTITUTION/**'
   schedule:
     - cron: '0 10 * * *'
   workflow_dispatch:
@@ -44,6 +45,13 @@ jobs:
         echo ""
         echo "📁 OUTPUTS/web/ klasörü:"
         ls -la OUTPUTS/web/ 2>/dev/null || echo "  (klasör boş veya yok)"
+        echo ""
+        echo "📁 CONSTITUTION/ klasörü:"
+        ls -la CONSTITUTION/ 2>/dev/null || echo "  (klasör boş veya yok)"
+    
+    - name: 🧮 Muhasebeci Ajanını Test Et
+      run: |
+        python SCRIPTS/test_accountant.py
     
     - name: 💾 Sonuçları kaydet
       run: |
@@ -54,6 +62,7 @@ jobs:
         git add DATA/processed/ 2>/dev/null || true
         git add OUTPUTS/reports/ 2>/dev/null || true
         git add OUTPUTS/web/ 2>/dev/null || true
+        git add CONSTITUTION/ 2>/dev/null || true
         
         # Değişiklik varsa commit ve push
         if ! git diff --cached --quiet; then
