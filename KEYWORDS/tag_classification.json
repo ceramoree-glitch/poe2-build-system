@@ -1,0 +1,44 @@
+{
+  "skill_tags": {
+    "damage_type": {
+      "physical": ["Physical", "Phys", "Attack Damage"],
+      "fire": ["Fire", "Burn", "Ignite"],
+      "cold": ["Cold", "Freeze", "Chill"],
+      "lightning": ["Lightning", "Shock", "Spark"],
+      "chaos": ["Chaos", "Poison", "Wither"]
+    },
+    "skill_type": {
+      "spell": ["Spell", "Cast", "Magic"],
+      "attack": ["Attack", "Strike", "Slam"],
+      "melee": ["Melee", "Strike", "Slam"],
+      "ranged": ["Projectile", "Bow", "Wand"],
+      "minion": ["Minion", "Summon", "Raise"],
+      "aura": ["Aura", "Buff", "Ally"],
+      "curse": ["Curse", "Hex", "Debuff"],
+      "movement": ["Movement", "Dash", "Blink"]
+    },
+    "mechanic": {
+      "trigger": ["Trigger", "Proc", "Cast on"],
+      "channel": ["Channel", "Hold", "Continuous"],
+      "combo": ["Combo", "Chain", "Sequence"],
+      "detonator": ["Detonate", "Explode", "Consume"]
+    }
+  },
+  
+  "support_tags": {
+    "multiplier": ["More", "Increased", "Bonus"],
+    "utility": ["Faster", "Extended", "Pierce", "Chain"],
+    "conditional": ["when", "if", "while", "against"]
+  },
+  
+  "ascendancy_tags": {
+    "class": ["Warrior", "Sorceress", "Monk", "Ranger", "Witch", "Mercenary"],
+    "ascendancy": ["Titan", "Warbringer", "Stormweaver", "Chronomancer", "Invoker", "Acolyte"]
+  },
+  
+  "unique_tags": {
+    "slot": ["Body Armour", "Helmet", "Gloves", "Boots", "Shield", "Belt", "Amulet", "Ring"],
+    "rarity": ["Unique", "Rare", "Magic", "Normal"],
+    "requirement": ["Strength", "Dexterity", "Intelligence", "Level"]
+  }
+}
