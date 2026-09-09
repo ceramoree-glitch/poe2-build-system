@@ -8,6 +8,7 @@ on:
       - 'ASCENDANCY/*.csv'
       - 'SRC/**'
       - 'CONSTITUTION/**'
+      - 'index.html'
   schedule:
     - cron: '0 10 * * *'
   workflow_dispatch:
@@ -17,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pages: write
+      id-token: write
     
     steps:
     - name: 📥 Repoyu çek
@@ -43,15 +46,16 @@ jobs:
         echo "📁 OUTPUTS/reports/daily/ klasörü:"
         ls -la OUTPUTS/reports/daily/ 2>/dev/null || echo "  (klasör boş veya yok)"
         echo ""
-        echo "📁 OUTPUTS/web/ klasörü:"
-        ls -la OUTPUTS/web/ 2>/dev/null || echo "  (klasör boş veya yok)"
-        echo ""
         echo "📁 CONSTITUTION/ klasörü:"
         ls -la CONSTITUTION/ 2>/dev/null || echo "  (klasör boş veya yok)"
     
     - name: 🧮 Muhasebeci Ajanını Test Et
       run: |
         python SCRIPTS/test_accountant.py
+    
+    - name: 🎯 En iyi support kombinasyonunu bul
+      run: |
+        python SCRIPTS/find_best_supports.py
     
     - name: 💾 Sonuçları kaydet
       run: |
@@ -61,8 +65,8 @@ jobs:
         # Var olan dosyaları ekle (hata varsa geç)
         git add DATA/processed/ 2>/dev/null || true
         git add OUTPUTS/reports/ 2>/dev/null || true
-        git add OUTPUTS/web/ 2>/dev/null || true
         git add CONSTITUTION/ 2>/dev/null || true
+        git add OUTPUTS/web/ 2>/dev/null || true
         
         # Değişiklik varsa commit ve push
         if ! git diff --cached --quiet; then
