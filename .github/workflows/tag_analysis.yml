@@ -9,6 +9,7 @@ on:
       - 'SRC/**'
       - 'CONSTITUTION/**'
       - 'SCRIPTS/**'
+      - 'DATA/raw/**'
   schedule:
     - cron: '0 10 * * *'
   workflow_dispatch:
@@ -31,9 +32,11 @@ jobs:
     - name: 📦 Bağımlılıkları yükle
       run: |
         pip install pandas numpy
+    
     - name: 🧹 Skill verisini ön işle
-  run: |
-    python SCRIPTS/preprocess_skills.py
+      run: |
+        python SCRIPTS/preprocess_skills.py
+    
     - name: 🔍 Etiket analizini çalıştır
       run: |
         python SCRIPTS/run_tag_analysis.py
